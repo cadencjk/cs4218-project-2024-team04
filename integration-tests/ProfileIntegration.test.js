@@ -3,6 +3,7 @@ import supertest from 'supertest';
 import app from '../server.js'; // Import the Express app from server.js
 import User from '../models/userModel.js'; // Import the User model
 import JWT from 'jsonwebtoken'; // Import jwt to mock verify
+import users from '../test-db-utils/sample-data/sampleUsers.js'; // Import the users data
 import {comparePassword} from "../helpers/authHelper.js";
 
 const sampleUser = {
@@ -21,9 +22,9 @@ const sampleUser = {
 let userId;
 let jwtToken;
 
-// Setup and teardown for the database
 beforeEach(async () => {
     await mongoose.connection.db.collection('users').deleteMany({});
+    await mongoose.connection.db.collection('users').insertMany(users);
     const response = await User.create(sampleUser);
     userId = response._id;
     jwtToken = await JWT.sign({ _id: response._id }, process.env.JWT_SECRET, {
